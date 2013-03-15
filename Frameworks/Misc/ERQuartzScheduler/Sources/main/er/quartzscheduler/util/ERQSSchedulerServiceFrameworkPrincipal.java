@@ -180,7 +180,12 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	{
 		return ERXProperties.booleanForKeyWithDefault("er.quartzscheduler.schedulerServiceToLaunch", false);
 	}
-	
+
+	public boolean isSchedulerRunning()
+	{
+		return getScheduler() != null;
+	}
+
 	/**
 	 * Return the quartz scheduler which schedules the job described by ERQSJobDescription objects.<p>
 	 * As the quartz scheduler is uses a ram job stores, everything is gone when the scheduler stops.<br>
