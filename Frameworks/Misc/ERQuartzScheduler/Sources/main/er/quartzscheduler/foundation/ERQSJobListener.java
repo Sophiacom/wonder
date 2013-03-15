@@ -300,7 +300,7 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 	 */
 	protected String getMailSubject(final JobExecutionContext jobexecutioncontext)
 	{
-		String subjectTemplate = (String) localizer().valueForKey("COScheduler.MailSubject");
+		String subjectTemplate = (String) localizer().valueForKey("ERQuartzScheduler.MailSubject");
 		if (log.isDebugEnabled())
 			log.debug("method: getMailSubject: subjectTemplate: " + subjectTemplate);
 		if (subjectTemplate == null)
@@ -327,7 +327,7 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 		String duration = formattedDuration(jobexecutioncontext.getJobRunTime()); 
 		if (errorMsg != null)
 		{
-			String mailErrorTemplate = (String) localizer().valueForKey("COScheduler.DefaultMailErrorMessage");
+			String mailErrorTemplate = (String) localizer().valueForKey("ERQuartzScheduler.DefaultMailErrorMessage");
 			if (log.isDebugEnabled())
 				log.debug("method: getMailContent: mailErrorTemplate: " + mailErrorTemplate);
 			if (mailErrorTemplate == null)
@@ -341,7 +341,7 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 
 		if (ERXStringUtilities.stringIsNullOrEmpty(message))
 		{
-			String mailTemplate = (String) localizer().valueForKey("COScheduler.DefaultMailShortMessage");
+			String mailTemplate = (String) localizer().valueForKey("ERQuartzScheduler.DefaultMailShortMessage");
 			if (log.isDebugEnabled())
 				log.debug("method: getMailContent: DefaultMailShortMessage: mailTemplate: " + mailTemplate);
 			if (mailTemplate == null)
@@ -353,7 +353,7 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 		}
 		else
 		{
-			String mailTemplate = (String) localizer().valueForKey("COScheduler.DefaultMailMessageWithMoreInfos");
+			String mailTemplate = (String) localizer().valueForKey("ERQuartzScheduler.DefaultMailMessageWithMoreInfos");
 			if (log.isDebugEnabled())
 				log.debug("method: getMailContent: DefaultMailMessageWithMoreInfos: mailTemplate: " + mailTemplate);
 			if (mailTemplate == null)

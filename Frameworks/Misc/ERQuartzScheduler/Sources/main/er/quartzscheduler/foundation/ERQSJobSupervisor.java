@@ -47,9 +47,9 @@ import er.quartzscheduler.util.ERQSSchedulerServiceFrameworkPrincipal;
 @DisallowConcurrentExecution
 public class ERQSJobSupervisor extends ERQSAbstractJob
 {
-	public static final String TRIGGER_SUFFIX = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.foundation.ERQSJobSupervisor.suffix", ".CO");
+	public static final String TRIGGER_SUFFIX = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.foundation.ERQSJobSupervisor.suffix", ".ERQS");
 	public static final int DEFAULT_SLEEP_DURATION = 10; //10 mn
-	public static final String GROUP_NAME_PREFIX = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.foundation.ERQSJobSupervisor.prefix", "CO.");
+	public static final String GROUP_NAME_PREFIX = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.foundation.ERQSJobSupervisor.prefix", "ERQS.");
 
 	@Override
 	public void execute(final JobExecutionContext jobexecutioncontext) throws JobExecutionException 

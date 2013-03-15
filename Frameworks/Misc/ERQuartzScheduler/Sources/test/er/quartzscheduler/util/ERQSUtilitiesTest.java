@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import er.quartzscheduler.foundation.ERQSJob4Test;
 import er.quartzscheduler.foundation.ERQSJobDescription4Test;
-import er.quartzscheduler.util.ERQSUtilities.COJobInstanciationException;
+import er.quartzscheduler.util.ERQSUtilities.ERQSJobInstanciationException;
 
 public class ERQSUtilitiesTest 
 {
@@ -22,7 +22,7 @@ public class ERQSUtilitiesTest
 	}
 
 	@Test
-	public void testCreateJobInstance() throws COJobInstanciationException 
+	public void testCreateJobInstance() throws ERQSJobInstanciationException 
 	{
 		ERQSJobDescription4Test jd = initialize();
 		ERQSJob4Test aJob = (ERQSJob4Test) ERQSUtilities.createJobInstance(jd);
@@ -30,7 +30,7 @@ public class ERQSUtilitiesTest
 	}
 
 	@Test
-	public void testWillDelete() throws COJobInstanciationException 
+	public void testWillDelete() throws ERQSJobInstanciationException 
 	{
 		ERQSJobDescription4Test jd = initialize();
 		ERQSJob4Test aJob = (ERQSJob4Test) ERQSUtilities.willDelete(jd);
@@ -38,7 +38,7 @@ public class ERQSUtilitiesTest
 	}
 
 	@Test
-	public void testWillSave() throws COJobInstanciationException 
+	public void testWillSave() throws ERQSJobInstanciationException 
 	{
 		ERQSJobDescription4Test jd = initialize();
 		ERQSJob4Test aJob = (ERQSJob4Test) ERQSUtilities.willSave(jd);
@@ -46,7 +46,7 @@ public class ERQSUtilitiesTest
 	}
 
 	@Test
-	public void testValidateForDelete() throws COJobInstanciationException 
+	public void testValidateForDelete() throws ERQSJobInstanciationException 
 	{
 		ERQSJobDescription4Test jd = initialize();
 		ERQSJob4Test aJob = (ERQSJob4Test) ERQSUtilities.validateForDelete(jd);
@@ -54,15 +54,15 @@ public class ERQSUtilitiesTest
 	}
 
 	@Test
-	public void testValidateForSave() throws COJobInstanciationException 
+	public void testValidateForSave() throws ERQSJobInstanciationException 
 	{
 		ERQSJobDescription4Test jd = initialize();
 		ERQSJob4Test aJob = (ERQSJob4Test) ERQSUtilities.validateForSave(jd);
 		assertTrue(aJob.isValidateForSaveMethodCalled);
 	}
 
-	@Test (expected=COJobInstanciationException.class)
-	public void testWrongClass() throws COJobInstanciationException 
+	@Test (expected=ERQSJobInstanciationException.class)
+	public void testWrongClass() throws ERQSJobInstanciationException 
 	{
 		ERQSJobDescription4Test jd = initialize();
 		jd.setClassPath("NoClass");
