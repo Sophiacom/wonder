@@ -187,12 +187,12 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 					{
 						errorMsg = eValidation.getMessage();
 						userInfo.setObjectForKey(eValidation, EXCEPTION_KEY);
-						log.error("method: jobWasExecuted: validationException: ", eValidation);
+						log.error("method: jobWasExecuted: job description: " + aJobDescription.name() +  " validationException: ", eValidation);
 					} catch (Exception e)
 					{
 						errorMsg = e.getMessage();
 						userInfo.setObjectForKey(e, EXCEPTION_KEY);
-						log.error("method: jobWasExecuted: exception when saving job description: ", e);
+						log.error("method: jobWasExecuted: exception when saving job description: " + aJobDescription.name(), e);
 					} finally
 					{
 						ec.unlock();
