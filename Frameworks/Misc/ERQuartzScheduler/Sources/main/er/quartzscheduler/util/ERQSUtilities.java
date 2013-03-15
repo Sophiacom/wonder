@@ -8,7 +8,7 @@ import org.quartz.simpl.SimpleClassLoadHelper;
 
 import er.quartzscheduler.foundation.ERQSJob;
 import er.quartzscheduler.foundation.ERQSJobDescription;
-import er.quartzscheduler.util.ERQSUtilities.COJobInstanciationException.ErrorType;
+import er.quartzscheduler.util.ERQSUtilities.ERQSJobInstanciationException.ErrorType;
 
 /**
  * ERQSUtilities helps you to call the methods:
@@ -41,7 +41,7 @@ public class ERQSUtilities
 	 * @author Philippe Rabier
 	 * @see ErrorType
 	 */
-	public static class COJobInstanciationException extends Exception
+	public static class ERQSJobInstanciationException extends Exception
 	{
 		public enum ErrorType
 		{
@@ -52,13 +52,13 @@ public class ERQSUtilities
 		private static final long serialVersionUID = 1L;
 		private final ErrorType errorType;
 
-		public COJobInstanciationException(final String message, final ErrorType type) 
+		public ERQSJobInstanciationException(final String message, final ErrorType type) 
 		{
 			super(message);
 			errorType = type;
 		}
 
-		public COJobInstanciationException(final String msg, final ErrorType type, final Throwable cause)
+		public ERQSJobInstanciationException(final String msg, final ErrorType type, final Throwable cause)
 		{
 			super(msg, cause);
 			errorType = type;
@@ -87,7 +87,7 @@ public class ERQSUtilities
 
 	protected static final Logger log = Logger.getLogger(ERQSUtilities.class);
 
-	public static Job createJobInstance(final ERQSJobDescription jobDescription) throws COJobInstanciationException
+	public static Job createJobInstance(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		if (jobDescription == null)
 			throw new IllegalArgumentException("jobDescription can't be null");
@@ -99,7 +99,7 @@ public class ERQSUtilities
 			aJobClass = (Class<? extends Job>) loader.loadClass(jobDescription.classPath());
 		} catch (ClassNotFoundException e) 
 		{
-			throw new COJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.CLASS_NOT_FOUND);
+			throw new ERQSJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.CLASS_NOT_FOUND);
 		}
 
 		Constructor<? extends Job> constructor = null;
@@ -108,7 +108,7 @@ public class ERQSUtilities
 			constructor = aJobClass.getConstructor();
 		} catch (Exception e) 
 		{
-			throw new COJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.CONSTRUCTOR_ERROR, e);
+			throw new ERQSJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.CONSTRUCTOR_ERROR, e);
 		}
 
 		Job aJob = null;
@@ -117,12 +117,12 @@ public class ERQSUtilities
 			aJob = constructor.newInstance();
 		} catch (Exception e) 
 		{
-			throw new COJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.INSTANCE_ERROR, e);
+			throw new ERQSJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.INSTANCE_ERROR, e);
 		}
 		return aJob;
 	}
 
-	public static Job willDelete(final ERQSJobDescription jobDescription) throws COJobInstanciationException
+	public static Job willDelete(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
 		if (aJob instanceof ERQSJob)
@@ -130,7 +130,7 @@ public class ERQSUtilities
 		return aJob;
 	}
 
-	public static Job willSave(final ERQSJobDescription jobDescription) throws COJobInstanciationException
+	public static Job willSave(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
 		if (aJob instanceof ERQSJob)
@@ -138,7 +138,7 @@ public class ERQSUtilities
 		return aJob;
 	}
 
-	public static Job validateForDelete(final ERQSJobDescription jobDescription) throws COJobInstanciationException
+	public static Job validateForDelete(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
 		if (aJob instanceof ERQSJob)
@@ -146,7 +146,7 @@ public class ERQSUtilities
 		return aJob;
 	}
 
-	public static Job validateForSave(final ERQSJobDescription jobDescription) throws COJobInstanciationException
+	public static Job validateForSave(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
 		if (aJob instanceof ERQSJob)

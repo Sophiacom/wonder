@@ -47,9 +47,9 @@ import er.quartzscheduler.foundation.ERQSMySupervisor;
  * <pre>
  * static 
  * {
- *    log.debug("MyClassThatExtendsCOSchedulerServiceFrameworkPrincipal: static: ENTERED");
- *    setUpFrameworkPrincipalClass(MyClassThatExtendsCOSchedulerServiceFrameworkPrincipal.class);
- *    log.debug("MyClassThatExtendsCOSchedulerServiceFrameworkPrincipal: static: DONE");
+ *    log.debug("MyClassThatExtendsERQSSchedulerServiceFrameworkPrincipal: static: ENTERED");
+ *    setUpFrameworkPrincipalClass(MyClassThatExtendsERQSSchedulerServiceFrameworkPrincipal.class);
+ *    log.debug("MyClassThatExtendsERQSSchedulerServiceFrameworkPrincipal: static: DONE");
  * }<br>
  * </pre>
  * 
@@ -58,7 +58,7 @@ import er.quartzscheduler.foundation.ERQSMySupervisor;
  */
 public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFrameworkPrincipal 
 {
-	public static final String INSTANCE_KEY = "COInstanceKey";
+	public static final String INSTANCE_KEY = "ERQSInstanceKey";
 	protected static final Logger log = Logger.getLogger(ERQSSchedulerServiceFrameworkPrincipal.class);
 	private static ERQSSchedulerServiceFrameworkPrincipal sharedInstance;
 	private volatile Scheduler quartzSheduler;
@@ -112,7 +112,7 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	 * public EOEditingContext newEditingContext()
 	 * {
 	 *    EOObjectStoreCoordinator osc = ERXTaskObjectStoreCoordinatorPool.objectStoreCoordinator();
-	 *    return COEditingContextFactory.newManualLockingEditingContext(osc);
+	 *    return MyEditingContextFactory.newManualLockingEditingContext(osc);
 	 * }
 	 * </pre>
 	 * @return new editingContext
@@ -355,7 +355,7 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	}
 	
 	/**
-	 * Use this method if you need to add other listeners jobs handled by COScheduler, aka job with group
+	 * Use this method if you need to add other listeners jobs handled by ERQuartzScheduler, aka job with group
 	 * beginning with ERQSJobSupervisor.GROUP_NAME_PREFIX
 	 * 
 	 * @param newJobListener
@@ -429,7 +429,7 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	
 	protected int supervisorSleepDuration()
 	{
-		return ERXProperties.intForKeyWithDefault("er.quartzscheduler.COJobSupervisor.sleepduration", ERQSJobSupervisor.DEFAULT_SLEEP_DURATION);
+		return ERXProperties.intForKeyWithDefault("er.quartzscheduler.ERQSJobSupervisor.sleepduration", ERQSJobSupervisor.DEFAULT_SLEEP_DURATION);
 	}
 	
 	public synchronized void deleteAllJobs()

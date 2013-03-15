@@ -1,13 +1,26 @@
-##  Properies Info	
-er.extensions.load.Properties.framework.ERQuartzScheduler=load
-er.extensions.ERQuartzScheduler.hasLocalization=true
+##  Properies Info
+er.extensions.load.Properties.framework.ERQuartzScheduler = load
+er.extensions.ERQuartzScheduler.hasLocalization = true
 
 # All the below properties can be set or overridden in  your project.
 
-fr.sophiacom.ynp.schedulerService.schedulerServiceToLaunch=true 
-# sleepduration unit is minute
-fr.sophiacom.corason.scheduler.COJobSupervisor.sleepduration=5 
-#fr.sophiacom.ynp.schedulerService.COJobListener.sendingmail=false
-#fr.sophiacom.ynp.schedulerService.COJobListener.from=fromEmail
-#fr.sophiacom.ynp.schedulerService.COJobListener.to=toEmail
-fr.sophiacom.ynp.schedulerService.COJobListener.defaultLanguage=English
+# set this property to false if you don't want the scheduler to run
+er.quartzscheduler.schedulerServiceToLaunch = true 
+
+# uncomment to override how often we check for new jobs (in minutes)
+#er.quartzscheduler.ERQSJobSupervisor.sleepduration = 10
+
+# uncomment if you want to send mails upon job completion/failure
+#er.quartzscheduler.ERQSJobListener.sendingmail = true
+
+# set the "from" field of emails you send 
+#er.quartzscheduler.ERQSJobListener.from = noreply@example.com
+
+# set to send a mail to given address while a job finish cleanly
+#er.quartzscheduler.ERQSJobListener.executionWithSuccess.to = normalMail@example.com
+
+# set to send a mail to given address while an error occurs during job execution
+#er.quartzscheduler.ERQSJobListener.executionWithError.to = errorMail@example.com
+
+# set to override default localizer
+#er.quartzscheduler.ERQSJobListener.defaultLanguage = English
