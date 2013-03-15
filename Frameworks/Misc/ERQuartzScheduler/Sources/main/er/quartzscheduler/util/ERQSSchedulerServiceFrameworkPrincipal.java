@@ -22,7 +22,10 @@ import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.Trigger.CompletedExecutionInstruction;
+import org.quartz.TriggerListener;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleClassLoadHelper;
 
@@ -131,8 +134,8 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
      * The following services must be set:
      * <ul>
      * <li> er.quartzscheduler.schedulerServiceToLaunch=true or false to launch or not the service
-     * <li> er.quartzscheduler.triggersAutomaticallyPaused=true or false. If <code>true</code> any new job/trigger will be
-     * in pause mode when added to the scheduler. Very useful when you are developing and debugging your code.
+     * <li> er.quartzscheduler.debugMode=true or false. If <code>true</code> any new job/trigger will be
+     * in paused when added to the scheduler. Very useful when you are developing and debugging your code.
  	 * </ul>
      */
 	@Override
@@ -151,9 +154,9 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 					getScheduler().start();
 					addJobListener(getDefaultJobListener());
 					instantiateJobSupervisor();
-					boolean shouldJobsBePausedAtLaunch = ERXProperties.booleanForKeyWithDefault("er.quartzscheduler.triggersAutomaticallyPaused", false);
-					if (shouldJobsBePausedAtLaunch)
-						getScheduler().pauseAll();
+					boolean debugMode = ERXProperties.booleanForKeyWithDefault("er.quartzscheduler.debugMode", false);
+					if (debugMode)
+						setDebugMode();
 				}
 				if (log.isInfoEnabled())
 					log.info("method: finishInitialization: DONE." + (scheduler == null ? "The scheduler is not running." : "The scheduler has been successfully launched."));
@@ -461,5 +464,35 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 		{
 			log.error("method: stopScheduler: exception: " + e.getMessage(), e);
 		}
+	}
+
+	// set a mode where the scheduler will ignore cron triggers
+	private void setDebugMode() throws SchedulerException {
+		Scheduler scheduler = getScheduler();
+
+		// add a simple listener that only allow one time triggers (ie: run now)
+		scheduler.getListenerManager().addTriggerListener(new TriggerListener() {
+
+			@Override
+			public String getName() {
+				return "Debug trigger listener";
+			}
+
+			// veto all cron jobs
+			@Override
+			public boolean vetoJobExecution(final Trigger trigger, final JobExecutionContext context) {
+				return trigger.mayFireAgain();
+			}
+
+			@Override
+			public void triggerMisfired(final Trigger trigger) {}
+
+			@Override
+			public void triggerFired(final Trigger trigger, final JobExecutionContext context) {}
+
+			@Override
+			public void triggerComplete(final Trigger trigger, final JobExecutionContext context, final CompletedExecutionInstruction instruction) {}
+
+		}, EverythingMatcher.allTriggers());
 	}
 }

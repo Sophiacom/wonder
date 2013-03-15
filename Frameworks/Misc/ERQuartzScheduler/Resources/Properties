@@ -24,3 +24,6 @@ er.quartzscheduler.schedulerServiceToLaunch = true
 
 # set to override default localizer
 #er.quartzscheduler.ERQSJobListener.defaultLanguage = English
+
+# uncomment if you want to start the scheduler in debug mode (jobs must be manually triggered: no cron)
+#er.quartzscheduler.debugMode = true
