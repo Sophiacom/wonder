@@ -41,9 +41,9 @@ public class ERQSSchedulerAppHelper
      */
 	public static void refuseNewSessions(final boolean shouldRefuse)
     {
-    	log.info("method: refuseNewSessions called with " + shouldRefuse);
-    	if (shouldRefuse && ERQSSchedulerServiceFrameworkPrincipal.schedulerMustRun())
-    	{
+		log.info("method: refuseNewSessions called with " + shouldRefuse);
+		if (shouldRefuse && ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().isSchedulerRunning())
+		{
     		ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().deleteAllJobs();
     	}
      }
@@ -57,7 +57,7 @@ public class ERQSSchedulerAppHelper
 	public static void _terminateFromMonitor()
     {
     	log.info("method: _terminateFromMonitor: Told to terminate by JavaMonitor");
-    	if (ERQSSchedulerServiceFrameworkPrincipal.schedulerMustRun())
+        if (ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().isSchedulerRunning())
     		ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().deleteAllJobs();
     }
 
@@ -72,7 +72,7 @@ public class ERQSSchedulerAppHelper
      */
 	public static boolean isTerminating(final boolean terminating)
     {
-    	if (terminating && ERQSSchedulerServiceFrameworkPrincipal.schedulerMustRun())
+		if (terminating && ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().isSchedulerRunning())
     	{
     		if (ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().hasRunningJobs())
     			return false;
