@@ -187,7 +187,7 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 					{
 						errorMsg = eValidation.getMessage();
 						userInfo.setObjectForKey(eValidation, EXCEPTION_KEY);
-						log.error("method: jobWasExecuted: job description: " + aJobDescription.name() +  " validationException: ", eValidation);
+						log.error("method: jobWasExecuted: job description: " + aJobDescription.name() + " validationException: ", eValidation);
 					} catch (Exception e)
 					{
 						errorMsg = e.getMessage();
@@ -195,6 +195,8 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 						log.error("method: jobWasExecuted: exception when saving job description: " + aJobDescription.name(), e);
 					} finally
 					{
+						// Otherwise, the next jobs couldn't be saved anymore if an exception is raised.
+						ec.revert();
 						ec.unlock();
 					}
 				}
