@@ -388,24 +388,22 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 		{
 			String fromEmail = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.ERQSJobListener.from","");
 			if (fromEmail.length() == 0 || recipients == null || recipients.size() == 0)
-				throw new IllegalStateException("method: sendMail: fromEmail or toEmail are empty: fromEmail: " + fromEmail + " /recipients: " + recipients);
-
-			ERMailDeliveryPlainText plainText = new ERMailDeliveryPlainText(); 
-			plainText.newMail(); 
-			plainText.setFromAddress(fromEmail);
-			plainText.setToAddresses(recipients);
-			plainText.setSubject(subject); 
-			plainText.setTextContent(textContent);
-			plainText.sendMail(false);
+				log.error("method: sendMail: fromEmail or toEmail are empty: fromEmail: " + fromEmail + " /recipients: " + recipients);
+			else
+			{
+				ERMailDeliveryPlainText plainText = new ERMailDeliveryPlainText(); 
+				plainText.newMail(); 
+				plainText.setFromAddress(fromEmail);
+				plainText.setToAddresses(recipients);
+				plainText.setSubject(subject); 
+				plainText.setTextContent(textContent);
+				plainText.sendMail(false);
+			}
 		} 
-		catch (AddressException e) 
+		catch (Exception e) 
 		{ 
 			log.error("Method: sendMail: ", e);
 		} 
-		catch (MessagingException e) 
-		{ 
-			log.error("Method: sendMail: ", e);
-		}
 	}
 
 	/**
