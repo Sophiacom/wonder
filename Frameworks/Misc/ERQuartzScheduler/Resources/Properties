@@ -4,8 +4,8 @@ er.extensions.ERQuartzScheduler.hasLocalization = true
 
 # All the below properties can be set or overridden in  your project.
 
-# set this property to false if you don't want the scheduler to run
-er.quartzscheduler.schedulerServiceToLaunch = true 
+# uncomment this property if you want to run the scheduler
+#er.quartzscheduler.schedulerServiceToLaunch = true
 
 # uncomment to override how often we check for new jobs (in minutes)
 #er.quartzscheduler.ERQSJobSupervisor.sleepduration = 10
