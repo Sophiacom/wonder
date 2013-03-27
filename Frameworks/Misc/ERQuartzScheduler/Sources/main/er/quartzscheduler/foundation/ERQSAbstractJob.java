@@ -13,7 +13,7 @@ import er.quartzscheduler.util.ERQSSchedulerServiceFrameworkPrincipal;
 
 public class ERQSAbstractJob implements Job
 {
-	protected static final Logger log = Logger.getLogger(ERQSJobSupervisor.class);
+	protected static final Logger log = Logger.getLogger(ERQSAbstractJob.class);
 	private EOEditingContext editingContext = null;
 	private ERQSSchedulerServiceFrameworkPrincipal schedulerFPInstance;
 	private JobExecutionContext jobContext;
