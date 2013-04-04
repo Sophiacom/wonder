@@ -90,6 +90,15 @@ public class CCDatePicker extends ERXStatelessComponent {
 	{
 		setValueForBinding(newDateIn, "value");
 	}
+	
+	public String placeholder(){
+		return (String) objectValueForBinding("placeholder");
+	}
+	
+	public void setPlaceholder(String placeholder)
+	{
+		setValueForBinding(placeholder, "placeholder");
+	}
 
     /**
      * Adds date-picker.js to the header or includes it in an Ajax friendly manner.
