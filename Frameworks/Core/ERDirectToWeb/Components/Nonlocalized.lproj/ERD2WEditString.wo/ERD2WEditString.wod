@@ -20,4 +20,5 @@ EditString: WOTextField {
 	id = d2wContext.id;
 	title = d2wContext.title;
 	name = d2wContext.name;
+	placeholder = placeholder;
 }

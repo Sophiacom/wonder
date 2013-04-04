@@ -10,6 +10,7 @@ import com.webobjects.appserver.WOContext;
 import com.webobjects.appserver.WORequest;
 import com.webobjects.directtoweb.D2WEditString;
 
+import er.extensions.appserver.ERXSession;
 import er.extensions.foundation.ERXValueUtilities;
 import er.extensions.validation.ERXValidationException;
 import er.extensions.validation.ERXValidationFactory;
@@ -65,4 +66,11 @@ public class ERD2WEditString extends D2WEditString {
 			validationFailedWithException(exception, value(), propertyKey());
 		}
 	}
+    
+    public String placeholder(){
+    	String placeholderValue = (String) d2wContext().valueForKey("placeholder");
+    	if (placeholderValue == null)
+    		return null;
+    	return ((ERXSession) context().session()).localizer().localizedDisplayNameForKey("Placeholder", placeholderValue);
+    }
 }
