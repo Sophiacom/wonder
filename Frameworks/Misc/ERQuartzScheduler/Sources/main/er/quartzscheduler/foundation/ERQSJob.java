@@ -13,6 +13,22 @@ import com.webobjects.eocontrol.EOEnterpriseObject;
 import com.webobjects.eocontrol.EOGlobalID;
 import com.webobjects.foundation.NSTimestamp;
 
+import er.extensions.eof.ERXEOControlUtilities;
+import er.quartzscheduler.util.ERQSUtilities;
+
+/**
+ * Subclass ERQSJob to create your own jobs.<p>
+ * 
+ * The most important method to implement is _execute(). That's the place to put your code that is will be 
+ * executed periodically.<br>
+ * The willXXX and validateForXXX methods can be empty.<br><br>
+ * 
+ * <b>Note:</b>the concurrent execution of a same job is disabled by default. If you need to allow concurrent executions,
+ * change the annotation to xxx
+ * 
+ * @author Philippe Rabier
+ *
+ */
 @DisallowConcurrentExecution
 public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJob
 {
@@ -26,7 +42,6 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
 	 * Implementation of Job interface.
 	 * Called by the Scheduler when a Trigger associated with the job is fired.<br>
 	 * getJobContext() returns the jobContext after execute() is called.<p>
-	 * To be sure that any exception will be catched, _execute() call in surround by a try/catch block. 
 	 * 
 	 * @param jobexecutioncontext passed by the scheduler
 	 * @see <a href="http://quartz-scheduler.org/documentation/best-practices">http://quartz-scheduler.org/documentation/best-practices</a>
@@ -46,7 +61,9 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
 	}
 
 	/**
-	 * _execute() is called by execute(). Put your code here and everything will be set up for you.
+	 * _execute() is called by execute(). Put your code here and everything will be set up for you.<p>
+	 * To be sure that any exception will be caught, _execute() call must be surround by a try/catch block otherwise
+	 * the job is considered running forever.
 	 * 
 	 * @throws JobExecutionException 
 	 * 
@@ -56,51 +73,61 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
 	/**
 	 * It's a good place to put code that will be executed before job description deletion.<p>
 	 * Nothing is done automatically, you have to call this method manually if you want to give a chance to the job to
-	 * use its own logic.
+	 * use its own logic.<br><br>
+	 * 
+	 * However you can use the static methods of ERQSUtilities as helper.
 	 * 
 	 * @param aJobDescription
+	 * @see ERQSUtilities#willDelete(ERQSJobDescription)
 	 */
 	public abstract void willDelete(ERQSJobDescription aJobDescription);
 
 	/**
 	 * It's a good place to put code that will be executed before job description save.<p>
 	 * Nothing is done automatically, you have to call this method manually if you want to give a chance to the job to
-	 * use its own logic.
+	 * use its own logic.<br><br>
+	 * 
+	 * However you can use the static methods of ERQSUtilities as helper.
 	 * 
 	 * @param aJobDescription
+	 * @see ERQSUtilities#willSave(ERQSJobDescription)
 	 */
 	public abstract void willSave(ERQSJobDescription aJobDescription);
 
 	/**
 	 * It's a good place to put code that will check if the job description can be saved or not.<p>
 	 * Nothing is done automatically, you have to call this method manually if you want to give a chance to the job to
-	 * use its own logic.
+	 * use its own logic.<br><br>
+	 * 
+	 * However you can use the static methods of ERQSUtilities as helper.
 	 * 
 	 * @param aJobDescription
+	 * @see ERQSUtilities#validateForSave(ERQSJobDescription)
 	 */
 	public abstract void validateForSave(ERQSJobDescription aJobDescription);
 
 	/**
 	 * It's a good place to put code that will check if the job description can be deleted or not.<p>
 	 * Nothing is done automatically, you have to call this method manually if you want to give a chance to the job to
-	 * use its own logic.
+	 * use its own logic.<br><br>
+	 * 
+	 * However you can use the static methods of ERQSUtilities as helper.
 	 * 
 	 * @param aJobDescription
+	 * @see ERQSUtilities#validateForDelete(ERQSJobDescription)
 	 */
 	public abstract void validateForDelete(ERQSJobDescription aJobDescription);
 
 	/**
-	 * Send back the ERQSJobDescription Object attach to the job.
+	 * Return the ERQSJobDescription object attached to the job.
 	 *
-	 * @param ec editingContext (can be null if the NOScheduler object has been already defaulted)
-	 * @return the NOScheduler Object.
-	 * @throws IllegalStateException if there is no EOGlobalID in the JobDataMap or if ec is null and ERQSJobDescription object isn't already defaulted
+	 * @param ec editingContext (can be null only if ERQSJobDescription object is not an Enterprise Object)
+	 * @return the ERQSJobDescription object.
+	 * @throws IllegalArgumentException if ec is null and ERQSJobDescription object is an Enterprise Object
+	 * @throws IllegalStateException if there is no EOGlobalID in the JobDataMap 
 	 */
 	public ERQSJobDescription getJobDescription(final EOEditingContext ec)
 	{
-		if (jobDescription == null && ec == null)
-			throw new IllegalStateException("method: getJobDescription: jobDescription is null and ec as parameter is null too.");
-		
 		ERQSJobDescription aJobDescription;
 		
 		if (jobDescription == null)
@@ -111,7 +138,11 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
 			{
 				EOGlobalID id = (EOGlobalID) context.getMergedJobDataMap().get(ENTERPRISE_OBJECT_KEY);
 				if (id != null)
+				{
+					if (ec == null)
+						throw new IllegalArgumentException("method: getJobDescription: ec parameter can be null.");
 					jobDescription = (ERQSJobDescription) ec.faultForGlobalID(id, ec);
+				}
 				else
 					jobDescription = (ERQSJobDescription) context.getMergedJobDataMap().get(NOT_PERSISTENT_OBJECT_KEY);
 
@@ -127,21 +158,34 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
 		else
 		{
 			aJobDescription = jobDescription;
-			// if ec is not null, we make a local instance
-			if (aJobDescription.isEnterpriseObject() && ec != null)
-				aJobDescription = (ERQSJobDescription) EOUtilities.localInstanceOfObject(ec, (EOEnterpriseObject)aJobDescription);
+			if (aJobDescription.isEnterpriseObject())
+			{
+				if (ec == null)
+					throw new IllegalArgumentException("method: getJobDescription: ec parameter can be null.");
+				aJobDescription = (ERQSJobDescription) ERXEOControlUtilities.localInstanceOfObject(ec, (EOEnterpriseObject)aJobDescription);
+			}
 		}
 		
 		if (log.isDebugEnabled())
-			log.debug("method: getNOScheduler: noScheduler: " + jobDescription);
+			log.debug("method: getJobDescription: jobDescription: " + jobDescription);
 		return aJobDescription;
 	}
 
+	/**
+	 * Helper method that calls editingContext() before calling getJobDescription(final EOEditingContext ec)<p>
+	 * Useful method if you always use the editing context provided by editingContext() in your code.
+	 * 
+	 * @return the ERQSJobDescription object
+	 */
 	public ERQSJobDescription getJobDescription()
 	{
-		return getJobDescription(null);
+		return getJobDescription(editingContext());
 	}
 
+	/**
+	 * 
+	 * @return the last execution date stored in the ERQSJobDescription object
+	 */
 	public NSTimestamp getLastExecutionDate() 
 	{
 		return getJobDescription().lastExecutionDate();
@@ -160,6 +204,12 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
         jobInterrupted = true;
     }
     
+    /**
+     * Check this method periodically to give a chance to interrupt the job.<p>
+     * The main cause is a user clicking on the stop button in the ERQSJobInformation component.
+     * 
+     * @return <code>true</code> if a user is asking to stop the job
+     */
     protected boolean isJobInterrupted()
     {
     	return jobInterrupted;
