@@ -6,8 +6,6 @@ import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.simpl.SimpleClassLoadHelper;
 
-import com.webobjects.foundation.NSValidation;
-
 import er.quartzscheduler.foundation.ERQSJob;
 import er.quartzscheduler.foundation.ERQSJobDescription;
 import er.quartzscheduler.util.ERQSUtilities.ERQSJobInstanciationException.ErrorType;

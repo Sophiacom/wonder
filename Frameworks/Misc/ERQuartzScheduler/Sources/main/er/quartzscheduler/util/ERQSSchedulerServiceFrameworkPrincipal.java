@@ -460,6 +460,7 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 		}
 	}
 	
+	@Deprecated
 	public synchronized void stopScheduler()
 	{
 		try 
@@ -468,6 +469,22 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 		} catch (SchedulerException e) 
 		{
 			log.error("method: stopScheduler: exception: " + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Call this method when terminating an application.
+	 * Blocks until all running jobs are completed.
+	 */
+	public void terminate() {
+		log.debug("Method terminate: stopping scheduler");
+		try
+		{
+			if (schedulerMustRun() && isSchedulerRunning())
+				getScheduler().shutdown(true);
+		} catch (SchedulerException e)
+		{
+			log.error("method: isTerminating", e);
 		}
 	}
 
