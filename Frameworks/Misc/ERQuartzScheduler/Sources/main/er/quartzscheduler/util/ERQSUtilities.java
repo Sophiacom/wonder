@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.simpl.SimpleClassLoadHelper;
 
+import com.webobjects.foundation.NSValidation;
+
 import er.quartzscheduler.foundation.ERQSJob;
 import er.quartzscheduler.foundation.ERQSJobDescription;
 import er.quartzscheduler.util.ERQSUtilities.ERQSJobInstanciationException.ErrorType;
@@ -122,6 +124,27 @@ public class ERQSUtilities
 		return aJob;
 	}
 
+	/**
+	 * To give a chance to let the job execute code before deleting ERQSJobDescription object.<p>
+	 * For example, you could clean up folders created when the ERQSJobDescription object is itself created.<br><br>
+	 * 
+	 * Example:
+	 * <pre>
+	 *     public void willDelete() 
+	 *     {
+	 *     		super.willDelete();
+	 *     		try
+	 *     		{
+	 *     			ERQSUtilities.willDelete(this);
+	 *     		} catch (ERQSJobInstanciationException e) {
+	 *     			...
+	 *     		}
+	 *     }
+	 * </pre>
+	 * @param jobDescription
+	 * @return an instance of the job
+	 * @throws ERQSJobInstanciationException
+	 */
 	public static Job willDelete(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
@@ -130,6 +153,14 @@ public class ERQSUtilities
 		return aJob;
 	}
 
+	/**
+	 * To give a chance to let the job execute code before saving ERQSJobDescription object.<p>
+	 * For example, you could create up folders on the disk.<br><br>
+	 * 
+	 * @param jobDescription
+	 * @return an instance of the job
+	 * @throws ERQSJobInstanciationException
+	 */
 	public static Job willSave(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
@@ -138,6 +169,13 @@ public class ERQSUtilities
 		return aJob;
 	}
 
+	/**
+	 * To give a chance to let the job raise an validation exception before deleting ERQSJobDescription object.<p>
+	 * 
+	 * @param jobDescription
+	 * @return an instance of the job
+	 * @throws ERQSJobInstanciationException
+	 */
 	public static Job validateForDelete(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);
@@ -146,6 +184,30 @@ public class ERQSUtilities
 		return aJob;
 	}
 
+	/**
+	 * To give a chance to let the job raise an validation exception before validating ERQSJobDescription object.<p>
+	 * 
+	 * Example:
+	 * <pre>
+	 *     public void validateForSave() 
+	 *     {
+	 *     		super.validateForSave();
+	 *     		try
+	 *     		{
+	 *     			ERQSUtilities.validateForSave(this);
+	 *     		} catch (ERQSJobInstanciationException e) {
+	 *     			if (e.getErrorType() == ErrorType.CLASS_NOT_FOUND)
+	 *     				throw new NSValidation.ValidationException("The class " + this.classPath() + " doesn't exist.");
+	 *     			else
+	 *     				throw new NSValidation.ValidationException("There is an error when trying to run " + this.classPath() + ".");
+	 *     		}
+	 *     }
+	 * </pre>
+	 * 
+	 * @param jobDescription
+	 * @return an instance of the job
+	 * @throws ERQSJobInstanciationException
+	 */
 	public static Job validateForSave(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		Job aJob = createJobInstance(jobDescription);

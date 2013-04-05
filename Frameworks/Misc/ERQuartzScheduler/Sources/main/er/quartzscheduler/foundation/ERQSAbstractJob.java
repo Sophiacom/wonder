@@ -11,6 +11,14 @@ import com.webobjects.eocontrol.EOObjectStore;
 
 import er.quartzscheduler.util.ERQSSchedulerServiceFrameworkPrincipal;
 
+/**
+ * The most abstract job level which implements the Job interface.<p>
+ * Except for (unknown) reasons, you shouldn't subclass it directly but ERQSJob instead.<br>
+ * It provides basic methods like getting an editing context or give a feedback to the user through setResultMessage(msg)
+ * 
+ * @author Philippe Rabier
+ *
+ */
 public class ERQSAbstractJob implements Job
 {
 	protected static final Logger log = Logger.getLogger(ERQSAbstractJob.class);
@@ -26,6 +34,14 @@ public class ERQSAbstractJob implements Job
 			log.debug("Constructor: " + this);
 	}
 
+	/**
+	 * Implementation of Job interface.<p>
+	 * Called by the Scheduler when a Trigger associated with the job is fired.<br>
+	 * Initialize several ivar like the ERQSSchedulerServiceFrameworkPrincipal instance and the jobContext.<p>
+	 * 
+	 * @param jobexecutioncontext passed by the scheduler
+	 * @see <a href="http://quartz-scheduler.org/documentation/best-practices">http://quartz-scheduler.org/documentation/best-practices</a>
+	 */
 	public void execute(final JobExecutionContext jobexecutioncontext) throws JobExecutionException 
 	{
 		schedulerFPInstance = (ERQSSchedulerServiceFrameworkPrincipal) jobexecutioncontext.getMergedJobDataMap().get(ERQSSchedulerServiceFrameworkPrincipal.INSTANCE_KEY);
@@ -73,11 +89,19 @@ public class ERQSAbstractJob implements Job
 		return newEc;
 	}
 	
+	/**
+	 * 
+	 * @return the quartz scheduler instance
+	 */
 	protected Scheduler getScheduler() 
 	{
 		return getJobContext().getScheduler();
 	}
 
+	/**
+	 * 
+	 * @return the ERQSSchedulerServiceFrameworkPrincipal instance
+	 */
 	protected ERQSSchedulerServiceFrameworkPrincipal getSchedulerFPInstance() 
 	{
 		if (schedulerFPInstance == null)
