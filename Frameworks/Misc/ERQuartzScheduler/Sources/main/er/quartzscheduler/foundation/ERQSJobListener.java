@@ -3,9 +3,6 @@ package er.quartzscheduler.foundation;
 import java.text.MessageFormat;
 import java.util.Date;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;

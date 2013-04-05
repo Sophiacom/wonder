@@ -54,6 +54,7 @@ public class ERQSSchedulerAppHelper
      *
      * @see #isTerminating(boolean)
      */
+	@Deprecated
 	public static void _terminateFromMonitor()
     {
     	log.info("method: _terminateFromMonitor: Told to terminate by JavaMonitor");
@@ -70,6 +71,7 @@ public class ERQSSchedulerAppHelper
      *
      * @see com.webobjects.appserver.WOApplication#isTerminating()
      */
+	@Deprecated
 	public static boolean isTerminating(final boolean terminating)
     {
 		if (terminating && ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().isSchedulerRunning())
@@ -91,4 +93,12 @@ public class ERQSSchedulerAppHelper
     	}
     	return terminating;
     }
+
+	/**
+	 * Call this method when terminating an application.
+	 * Blocks until all running jobs are completed.
+	 */
+	public static void terminate() {
+		ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().terminate();
+	}
 }
