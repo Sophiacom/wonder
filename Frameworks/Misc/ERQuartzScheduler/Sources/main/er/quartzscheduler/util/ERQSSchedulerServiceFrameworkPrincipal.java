@@ -65,6 +65,7 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	protected static final Logger log = Logger.getLogger(ERQSSchedulerServiceFrameworkPrincipal.class);
 	private static ERQSSchedulerServiceFrameworkPrincipal sharedInstance;
 	private volatile Scheduler quartzSheduler;
+	private volatile boolean isShuttingDown = false;
 
 	/** 
 	 * 
@@ -254,6 +255,13 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
     {
     	try 
     	{
+			// first, check if the scheduler is running
+			if(!schedulerMustRun() ||
+					!isSchedulerRunning() ||
+					this.isShuttingDown ||
+					getScheduler().isShutdown())
+				return NSArray.emptyArray();
+
     		NSMutableArray<JobDetail> jobDetailList = new NSMutableArray<JobDetail>();
     		List<String> groups = getScheduler().getJobGroupNames();
 
@@ -478,6 +486,7 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	 */
 	public void terminate() {
 		log.debug("Method terminate: stopping scheduler");
+		this.isShuttingDown = true;
 		try
 		{
 			if (schedulerMustRun() && isSchedulerRunning())
