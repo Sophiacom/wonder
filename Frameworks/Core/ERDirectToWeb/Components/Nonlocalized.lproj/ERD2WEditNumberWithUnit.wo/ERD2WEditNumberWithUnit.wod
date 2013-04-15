@@ -3,6 +3,7 @@ EditNumber2: WOTextField {
 	useDecimalNumber = isDecimalNumber;
 	value = stringValue;
 	maxlength = d2wContext.maxLength;
+	placeholder = placeholder;
 }
 
 String1: WOString {
