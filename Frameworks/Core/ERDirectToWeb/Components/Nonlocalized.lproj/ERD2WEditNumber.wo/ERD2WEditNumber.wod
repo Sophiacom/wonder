@@ -3,5 +3,6 @@ EditNumber: WOTextField {
 	useDecimalNumber = isDecimalNumber;
 	value = stringValue;
 	name = d2wContext.name;
+	placeholder = placeholder;
 }
 

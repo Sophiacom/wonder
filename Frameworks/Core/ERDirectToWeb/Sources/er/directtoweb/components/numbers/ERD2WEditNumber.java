@@ -122,4 +122,8 @@ public class ERD2WEditNumber extends D2WEditNumber {
         }
         return newValue;
     }
+
+    public  String placeholder(){
+    	return (String) d2wContext().valueForKey("placeholder");
+    }
 }
