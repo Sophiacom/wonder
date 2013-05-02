@@ -33,4 +33,10 @@ public class ERQSJob4Test extends ERQSJob {
 	{
 		isValidateForSaveMethodCalled = true;
 	}
+
+	@Override
+	public boolean isJobInterruptible() 
+	{
+		return false;
+	}
 }

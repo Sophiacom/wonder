@@ -7,7 +7,6 @@ import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.UnableToInterruptJobException;
 
-import com.webobjects.eoaccess.EOUtilities;
 import com.webobjects.eocontrol.EOEditingContext;
 import com.webobjects.eocontrol.EOEnterpriseObject;
 import com.webobjects.eocontrol.EOGlobalID;
@@ -21,13 +20,12 @@ import er.quartzscheduler.util.ERQSUtilities;
  * 
  * The most important method to implement is _execute(). That's the place to put your code that is will be 
  * executed periodically.<br>
+ * You have to tell if your job supports interruption.<br><br>
  * The willXXX and validateForXXX methods can be empty.<br><br>
  * 
- * <b>Note:</b>the concurrent execution of a same job is disabled by default. If you need to allow concurrent executions,
- * change the annotation to xxx
- * 
  * @author Philippe Rabier
- *
+ * @see #_execute()
+ * @see #isJobInterruptible()
  */
 @DisallowConcurrentExecution
 public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJob
@@ -193,16 +191,28 @@ public abstract class ERQSJob extends ERQSAbstractJob implements InterruptableJo
 	
     /**
      * Called by the <code>{@link Scheduler}</code> when a user interrupts the <code>Job</code>.
-     * return void (nothing) if job interrupt is successful.
      *
-     * @throws JobExecutionException
-     *           if there is an exception while interrupting the job.
+     * @throws UnableToInterruptJobException if the job can't be interrupted.
      */
     public void interrupt() throws UnableToInterruptJobException 
     {
-        log.info("method: interrupt has been called for the job: " + getJobDescription());
-        jobInterrupted = true;
+    	log.info("method: interrupt has been called for the job: " + getJobDescription());
+    	if (this.isJobInterruptible())
+    		jobInterrupted = true;
+    	else
+    		throw new UnableToInterruptJobException("The job " + getJobDescription().name() + " can't be interrupted.");
     }
+    
+    /**
+     * You have to return true if your implementation handles the interruption of your job.<p>
+     * To handle the interruption, you have to check periodically the method <code>isJobInterrupted</code><br>
+     * If this method returns false, <code>interrupt</code> throws a <code>UnableToInterruptJobException</code> exception.
+     * 
+     * @return <code>true</code> if the job can be interrupted, <code>false</code> otherwise.
+     * @see #isJobInterrupted()
+     * @see #interrupt()
+     */
+    abstract public boolean isJobInterruptible();
     
     /**
      * Check this method periodically to give a chance to interrupt the job.<p>

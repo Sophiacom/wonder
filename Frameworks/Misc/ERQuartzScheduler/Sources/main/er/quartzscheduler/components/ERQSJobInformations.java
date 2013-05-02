@@ -85,10 +85,10 @@ public class ERQSJobInformations extends WOComponent
 	{
 		try 
 		{
-			ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().getScheduler().interrupt(aJob.getKey());
+			ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance().getScheduler().interrupt(aJobContext.getJobDetail().getKey());
 		} catch (UnableToInterruptJobException e) 
 		{
-			errorMessage = "Unable to stop the job: " + aJob.toString();
+			errorMessage = "Unable to stop the job: " + aJobContext.getJobDetail().getKey();
 		}
 		return null;
 	}

@@ -65,4 +65,10 @@ public class ERQSJobDemo extends ERQSJob
 	{
 		// Nothing to do			
 	}
+
+	@Override
+	public boolean isJobInterruptible() 
+	{
+		return false;
+	}
 }
