@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="Sources/test"/>
 	<classpathentry kind="src" path="Sources/main"/>
-	<classpathentry kind="lib" path="Libraries/quartz-2.1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="Libraries/quartz-2.1.7.jar"/>
 	<classpathentry kind="con" path="WOFramework/ERExtensions"/>
 	<classpathentry kind="con" path="WOFramework/ERJars"/>
 	<classpathentry kind="con" path="WOFramework/JavaWOExtensions"/>
