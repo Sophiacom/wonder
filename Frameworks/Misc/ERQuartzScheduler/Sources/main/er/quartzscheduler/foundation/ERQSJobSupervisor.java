@@ -8,6 +8,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.quartz.CronTrigger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -48,7 +49,7 @@ import er.quartzscheduler.util.ERQSSchedulerServiceFrameworkPrincipal;
 public class ERQSJobSupervisor extends ERQSAbstractJob
 {
 	public static final String TRIGGER_SUFFIX = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.foundation.ERQSJobSupervisor.suffix", ".ERQS");
-	public static final int DEFAULT_SLEEP_DURATION = 10; //10 mn
+	public static final int DEFAULT_SLEEP_DURATION = 10; //10 minutes
 	public static final String GROUP_NAME_PREFIX = ERXProperties.stringForKeyWithDefault("er.quartzscheduler.foundation.ERQSJobSupervisor.prefix", "ERQS.");
 
 	@Override
@@ -115,8 +116,6 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 				jobKeys2remove = scheduledJobKeysSet;
 			else
 			{
-				//NSSet<JobKey> scheduledJobKeysSet = new NSSet<JobKey>(scheduledJobKeys);
-				//JobKey temp = scheduledJobKeysSet.anyObject();
 				NSMutableSet<JobKey> jobKeys2Check = new NSMutableSet<JobKey>(jobs2Check.count());
 				for (ERQSJobDescription aJob2Check : jobs2Check) 
 				{
@@ -171,15 +170,22 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 		}
 	}
 
+	/**
+	 * The job key is heavily used by Quartz to access to a specific job. This method helps to build a jobkey from
+	 * a <code>ERQSJobDescription</code> object. 
+	 * 
+	 * @param aJobDescription
+	 * @return the jobKey of a job description object
+	 */
 	public JobKey getJobKeyForJobDescription(final ERQSJobDescription aJobDescription)
 	{
 		return new JobKey(aJobDescription.name(), buildGroup(aJobDescription.group()));
 	}
 	
 	/**
-	 * Add a job to the scheduler described the job description job2Add.<p>
+	 * Add a job to the scheduler described by the job description job2Add.<p>
 	 * 
-	 * @param job2Add job to add
+	 * @param job2Add the job description
 	 */
 	protected void addJob2Scheduler(final ERQSJobDescription job2Add) 
 	{
@@ -207,6 +213,13 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 		}
 	}
 
+	/**
+	 * Modify a job already handled by Quartz. It can by any information like the name, description,... or if the job
+	 * must be triggered differently.<p>
+	 * 
+	 * @param job2Check the job description that contains the modified informations
+	 * @param job to modify.
+	 */
 	protected void modifyJob(final ERQSJobDescription job2Check, final JobDetail job) 
 	{
 		if (log.isDebugEnabled())
@@ -298,6 +311,7 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 	 * @param jobDescription (we suppose that jobDescription is a subclass of ERXGenericRecord or a non persistent object)
 	 * @param job
 	 * @return a Trigger object
+	 * @see #buildTrigger(String, String, String, JobDataMap, JobDetail)
 	 */
 	protected Trigger buildTriggerForJob(final ERQSJobDescription jobDescription, final JobDetail job) 
 	{
@@ -308,6 +322,17 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 		return buildTrigger(name, group, cronExpression, null, job);
 	}
 
+	/** 
+	 * Build a trigger for a job.
+	 * 
+	 * @param name used to create the trigger
+	 * @param group used to create the trigger
+	 * @param cronExpression
+	 * @param map informations passed to the trigger
+	 * @param job to trigger
+	 * @return a Trigger object
+	 * 
+	 */
 	protected Trigger buildTrigger(final String name, final String group, final String cronExpression, final JobDataMap map, final JobDetail job)
 	{
 		Trigger trigger = null;		
@@ -335,23 +360,46 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 		return trigger;
 	}
 	
+	/**
+	 * A name (mandatory information to add a job to Quartz) is composed of a name and a suffix
+	 * 
+	 * @param name
+	 * @return name + TRIGGER_SUFFIX
+	 * @see ERQSJobSupervisor#TRIGGER_SUFFIX
+	 */
 	protected String buildTriggerName(final String name) 
 	{
 		return name + TRIGGER_SUFFIX;
 	}
 
+	/**
+	 * A group (mandatory information to add a job to Quartz) is composed of a prefix and a group
+	 * like prefix+group
+	 * 
+	 * @param group (a default value is used if group is null)
+	 * @return a group name
+	 * @see ERQSJobSupervisor#GROUP_NAME_PREFIX
+	 */
 	protected String buildGroup(final String group) 
 	{
-		if (ERXStringUtilities.stringIsNullOrEmpty(group))
+		if (StringUtils.isEmpty(group))
 			return GROUP_NAME_PREFIX + Scheduler.DEFAULT_GROUP;
 		return GROUP_NAME_PREFIX + group;
 	}
 
+	/**
+	 * A job description is valid if there are:
+	 * <ul>
+	 * <li>a classpath
+	 * <li> a name
+	 * </ul>
+	 * @param aJobDescription
+	 * @return
+	 */
 	protected boolean isJobDescriptionValid(final ERQSJobDescription aJobDescription)
 	{
-		return (aJobDescription.classPath() != null && aJobDescription.classPath().length() != 0
-				&& aJobDescription.name() != null  && aJobDescription.name().length() != 0
-				);
+		return (StringUtils.isNotEmpty(aJobDescription.classPath())
+				&& StringUtils.isNotEmpty(aJobDescription.name()));
 	}
 
 	protected Class<? extends Job> getClass(final String path) {
@@ -375,6 +423,12 @@ public class ERQSJobSupervisor extends ERQSAbstractJob
 		return jobClass;
 	}
 	
+	/**
+	 * Calls directly <code>ERXEC.newEditingContext()</code> with the default object store.<p>
+	 * That's to avoid to create a new EOF stack for the supervisor.
+	 * 
+	 * @return an editing context 
+	 */
 	@Override
 	public EOEditingContext newEditingContext()
 	{

@@ -21,11 +21,11 @@
  * @see er.quartzscheduler.foundation.ERQSJobListener
 * 
  * <h4>ERQSAbstractJob</h4>
- * This abstract class is used by ERQSJobSupervisor.java and ERQSJob.java. Normally you shouldn't have to sub-class it directly but use ERQSJob.java.
+ * This abstract class is used by ERQSJobSupervisor.java and ERQSJob.java. Normally you shouldn't have to sub-class it directly but use ERQSJob.java instead.
  * @see er.quartzscheduler.foundation.ERQSAbstractJob
  * 
  * <h4>ERQSJob</h4>
- * ERQSJob is an abstract class you must use to develop your own job. It provides your code with methods like newEditingContex or the job description object linked to your job.
+ * ERQSJob is an abstract class you should use to develop your own job. It provides useful methods like newEditingContext or the job description object linked to your job.
  * @see er.quartzscheduler.foundation.ERQSJob
  * 
  * <h2>Integration with WOApplication</h2>
@@ -37,7 +37,7 @@
  * <li>a job that runs and execute your code
  * </ul>
  * So you you have to design EOs that will handle persistence of your job description. Your EO class must implement ERQSJobDescription.<p>
- * However, it's not absolutely necessary to create enterprise objects. If your objects are pure java objects, don't forget to return false in the method isEnterpriseObject 
+ * However, it's not necessary to create enterprise objects. If your objects are pure java objects, don't forget to return false in the method isEnterpriseObject 
  * 
  * <h4>Second step: sub-class ERQSSchedulerServiceFrameworkPrincipal</h4>
  * Create your own framework principal and implement the methods:

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -39,40 +40,43 @@ public class ERQSSchedulerServiceFrameworkPrincipalTest
 		public void jobExecutionVetoed(final JobExecutionContext arg0) 
 		{
 			// Nothing to do			
-			
+
 		}
 
 		public void jobToBeExecuted(final JobExecutionContext arg0) 
 		{
 			// Nothing to do			
-			
+
 		}
 
 		public void jobWasExecuted(final JobExecutionContext arg0, final JobExecutionException arg1) 
 		{
 			// TODO Auto-generated method stub
-			
+
 		}
 	}
 
-	@Test (expected=IllegalStateException.class)
-	public void testSharedInstanceNotInitialized()
+	@BeforeClass
+	public static void testSetup() 
 	{
-		ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance();
+		ERQSSchedulerFP4Test.setUpFrameworkPrincipal();
+		Properties p = new Properties(System.getProperties());
+		p.setProperty("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
+		p.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
+		System.setProperties(p);
 	}
 
-	@Test
-	public void testSetSharedInstance() 
+	@Test 
+	public void testSharedInstanceNotNull()
 	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
-		ERQSSchedulerServiceFrameworkPrincipal.setSharedInstance(fp);
-		assertEquals(ERQSSchedulerServiceFrameworkPrincipal.getSharedInstance(), fp);
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
+		assertNotNull(fp);
 	}
 
 	@Test
 	public void testInstantiateJobSupervisor() throws SchedulerException 
 	{
-		ERQSSchedulerFP4Test fp = new ERQSSchedulerFP4Test();
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
 		fp.instantiateJobSupervisor();
 		JobDetail supervisor = fp.getScheduler().getJobDetail(new JobKey("JobSupervisor", Scheduler.DEFAULT_GROUP));
 		assertNotNull(supervisor);
@@ -81,29 +85,16 @@ public class ERQSSchedulerServiceFrameworkPrincipalTest
 	}
 
 	@Test
-	public void testSetJobListener() 
-	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
-		assertEquals(fp.getDefaultJobListener().getClass(), ERQSJobListener.class);
-	}
-
-	@Test
 	public void testGetDefaultJobListener() 
 	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
-		ERQSSchedulerServiceFrameworkPrincipal.setSharedInstance(fp);
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
 		assertTrue(fp.getDefaultJobListener() instanceof ERQSJobListener);
 	}
 
 	@Test
 	public void testAddJobListener() throws SchedulerException 
 	{
-		Properties p = new Properties(System.getProperties());
-		p.setProperty("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
-		p.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
-		System.setProperties(p);
-		ERQSSchedulerFP4Test fp = new ERQSSchedulerFP4Test();
-		ERQSSchedulerServiceFrameworkPrincipal.setSharedInstance(fp);
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
 		fp.addJobListener(fp.getDefaultJobListener());
 		JobListener aJobListener = fp.getScheduler().getListenerManager().getJobListener(ERQSJobListener.class.getName());
 		assertNotNull(aJobListener);
@@ -112,31 +103,21 @@ public class ERQSSchedulerServiceFrameworkPrincipalTest
 	@Test
 	public void testDefaultSupervisorSleepDuration() 
 	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
 		assertTrue(fp.supervisorSleepDuration() == ERQSJobSupervisor.DEFAULT_SLEEP_DURATION);
 	}
 
 	@Test
 	public void testGetListOfJobDescription() 
 	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
 		assertTrue(fp.getListOfJobDescription(null).size() == 0);
 	}
 
 	@Test
 	public void testNewEditingContext() 
 	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
+		ERQSSchedulerServiceFrameworkPrincipal fp = ERQSSchedulerFP4Test.getSharedInstance();
 		assertNotNull(fp.newEditingContext());
-	}
-
-	@Test
-	public void testStopScheduler() throws SchedulerException 
-	{
-		ERQSSchedulerServiceFrameworkPrincipal fp = new ERQSSchedulerFP4Test();
-		Scheduler s = fp.getScheduler();
-		fp.stopScheduler();
-		boolean result = s.isShutdown();
-		assertTrue(result);
 	}
 }
