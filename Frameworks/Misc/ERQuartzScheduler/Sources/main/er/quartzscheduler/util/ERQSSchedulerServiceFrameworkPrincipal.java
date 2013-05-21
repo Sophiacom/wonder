@@ -68,8 +68,10 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	private volatile boolean isShuttingDown = false;
 
 	/** 
+	 * This method doesn't call the classical sharedInstance(FrameworkPrincipal.class) method as
+	 * we don't know here what is the concrete class that will be instantiate.
 	 * 
-	 * @return shared instance of framework principal
+	 * @return shared instance of the quartz scheduler framework principal
 	 */
 	public static ERQSSchedulerServiceFrameworkPrincipal getSharedInstance()
 	{
@@ -78,11 +80,12 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 		return sharedInstance;
 	}
 	
-	public static void setSharedInstance(final ERQSSchedulerServiceFrameworkPrincipal aSharedInstance)
-	{
-		sharedInstance = aSharedInstance;
-	}
-	
+    protected void initialize() 
+    {
+       super.initialize();
+       sharedInstance = this;
+    }
+
 	/**
 	 *  Expects that this method never returns null but an empty array if there is no job
 	 * 
@@ -144,7 +147,6 @@ public abstract class ERQSSchedulerServiceFrameworkPrincipal extends ERXFramewor
 	{
 		if (log.isInfoEnabled())
 			log.info("method: finishInitialization: ENTER: isSchedulerMustRun: " + schedulerMustRun());
-		setSharedInstance(this);
 		if (schedulerMustRun())
 		{
 			try 

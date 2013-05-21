@@ -15,7 +15,11 @@ import er.quartzscheduler.foundation.ERQSMySupervisor;
 @ERQSMySupervisor("er.quartzscheduler.foundation.ERQSJobSupervisor")
 public class ERQSSchedulerFP4Test extends ERQSSchedulerServiceFrameworkPrincipal 
 {
-	
+	public static void setUpFrameworkPrincipal()
+	{
+		setUpFrameworkPrincipalClass(ERQSSchedulerFP4Test.class);
+	}
+
 	@Override
 	public NSArray<ERQSJobDescription> getListOfJobDescription(final EOEditingContext editingContext) 
 	{
