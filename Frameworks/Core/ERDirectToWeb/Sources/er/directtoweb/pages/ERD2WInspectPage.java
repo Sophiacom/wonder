@@ -120,6 +120,10 @@ public class ERD2WInspectPage extends ERD2WPage implements InspectPageInterface,
         return result;
     }
     
+    public WOComponent nextPageNoAction(){
+    	return _nextPage;
+    }
+    
     public WOComponent editAction() {
         WOComponent returnPage = null;
         if (previousPage() == null) {
