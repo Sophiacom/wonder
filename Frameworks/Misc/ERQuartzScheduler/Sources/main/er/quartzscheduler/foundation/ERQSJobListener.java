@@ -180,6 +180,14 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 							updateJobDescription(jobexecutioncontext, aJobDescription);
 							ec.saveChanges();
 						}
+						
+						// We read the value each time because this value can be changed dynamically in development.
+						boolean isSendingMail = ERXProperties.booleanForKeyWithDefault("er.quartzscheduler.ERQSJobListener.sendingmail", false);
+						// The call to sendMail is done inside the try/catch as the default implementation uses an editing context
+						// Another option would be to add a try/catch in the sendMail method.
+						if (isSendingMail)
+							sendMail(getMailSubject(jobexecutioncontext), getMailContent(jobexecutioncontext, errorMsg), recipients(jobexecutioncontext, jobexecutionexception == null));
+						
 					}  catch (NSValidation.ValidationException eValidation)
 					{
 						errorMsg = eValidation.getMessage();
@@ -200,10 +208,6 @@ public class ERQSJobListener extends ERQSAbstractListener implements JobListener
 			}
 
 			logResult(jobexecutioncontext, errorMsg);
-			// We read the value each time because this value can be changed dynamically in development.
-			boolean isSendingMail = ERXProperties.booleanForKeyWithDefault("er.quartzscheduler.ERQSJobListener.sendingmail", false);
-			if (isSendingMail)
-				sendMail(getMailSubject(jobexecutioncontext), getMailContent(jobexecutioncontext, errorMsg), recipients(jobexecutioncontext, jobexecutionexception == null));
 		}
 		if (userInfo != null && userInfo.size() > 0)
 			NSNotificationCenter.defaultCenter().postNotification(JOB_RAN, null, userInfo.immutableClone());
