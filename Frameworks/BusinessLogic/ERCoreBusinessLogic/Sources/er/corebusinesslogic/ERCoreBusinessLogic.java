@@ -30,7 +30,6 @@ import com.webobjects.foundation.NSForwardException;
 import com.webobjects.foundation.NSLog;
 
 import er.corebusinesslogic.audittrail.ERCAuditTrailHandler;
-import er.directtoweb.ERDirectToWeb;
 import er.extensions.ERXExtensions;
 import er.extensions.ERXFrameworkPrincipal;
 import er.extensions.appserver.ERXApplication;
@@ -55,11 +54,11 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 
     //	===========================================================================
     //	Class constant(s)
-    //	---------------------------------------------------------------------------    
-    
+    //	---------------------------------------------------------------------------
+
     /** logging support */
     public static final Logger log = Logger.getLogger(ERCoreBusinessLogic.class);
-    
+
     /** property key that holds the email domain of the generated from email */
     public static final String ProblemEmailDomainPropertyKey = "er.corebusinesslogic.ERCoreBusinessLogic.ProblemEmailDomain";
 
@@ -68,12 +67,12 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 
     //	===========================================================================
     //	Class variable(s)
-    //	---------------------------------------------------------------------------    
-    
+    //	---------------------------------------------------------------------------
+
     /** holds the shared instance reference */
     protected static ERCoreBusinessLogic sharedInstance;
-    
-    public final static Class REQUIRES[] = new Class[] {ERXExtensions.class, ERDirectToWeb.class, ERJavaMail.class};
+
+    public final static Class REQUIRES[] = new Class[] {ERXExtensions.class, ERJavaMail.class};
 
     /**
      * Registers the class as the framework principal
@@ -84,8 +83,8 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 
     //	===========================================================================
     //	Class method(s)
-    //	---------------------------------------------------------------------------    
-    
+    //	---------------------------------------------------------------------------
+
     /**
      * Gets the shared instance of the ERCoreBusinessLogic.
      * @return shared instance.
@@ -135,7 +134,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
             	}
         		actor = localActor;
             } finally {
-                actorEc.unlock();                
+                actorEc.unlock();
             }
         }
         return actor;
@@ -152,7 +151,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
     public static String staticStoredValueForKey(String key) {
         return ERCStatic.clazz.staticStoredValueForKey(key);
     }
-    
+
     public static int staticStoredIntValueForKey(String key) {
         return ERCStatic.clazz.staticStoredIntValueForKey(key);
     }
@@ -160,10 +159,10 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
     public static String staticStoredValueForKey(String key, boolean noCache) {
         return ERCStatic.clazz.staticStoredValueForKey(key, noCache);
     }
-    
+
     public static int staticStoredIntValueForKey(String key, boolean noCache) {
         return ERCStatic.clazz.staticStoredIntValueForKey(key, noCache);
-    }    
+    }
 
     public static String staticStoredValueForKey(String key, EOEditingContext ec) {
         return ERCStatic.clazz.staticStoredValueForKey(ec, key);
@@ -178,7 +177,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 
     public static void takeStaticStoredValueForKey(String value, String key) {
         ERCStatic.clazz.takeStaticStoredValueForKey(value, key);
-    }    
+    }
 
     public static void invalidateStaticValueForKeyCache() {
         ERCStatic.clazz.invalidateCache();
@@ -193,11 +192,11 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 
     /** caches the problem email address domain */
     protected String _problemEmailDomain;
-    
+
     //	===========================================================================
     //	Instance method(s)
-    //	---------------------------------------------------------------------------    
-    
+    //	---------------------------------------------------------------------------
+
     /**
      * Called when it is time to finish the
      * initialization of the framework.
@@ -224,7 +223,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
     public boolean shouldMailReportedExceptions() {
         return ERXProperties.booleanForKey("er.corebusinesslogic.ERCoreBusinessLogic.ShouldMailExceptions");
     }
-    
+
     public void addPreferenceRelationshipToActorEntity(String entityName) {
         EOEntity entity  = EOModelGroup.defaultGroup().entityNamed(entityName);
         if(entity != null && entity.primaryKeyAttributeNames().count() == 1) {
@@ -233,18 +232,18 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
             throw new IllegalArgumentException("Entity is not suitable: " + entityName);
         }
     }
-    
+
     /**
-     * Registers a run-time relationship called "preferences" on the actor 
-     * entity of your business logic. The framework needs preferences 
-     * relationship to access user preferences for a specific actor. 
-     * Call this method when you initialize your business logic layer. 
+     * Registers a run-time relationship called "preferences" on the actor
+     * entity of your business logic. The framework needs preferences
+     * relationship to access user preferences for a specific actor.
+     * Call this method when you initialize your business logic layer.
      * (Check BTBusinessLogic class as an example.)
-     * 
+     *
      * @param  entityName  String name for your actor entity
      * @param  attributeNameToJoin  String attribute name on the actor
-     *         entity; used by the relationship and typically it's the 
-     *         primary key. 
+     *         entity; used by the relationship and typically it's the
+     *         primary key.
      */
     public void addPreferenceRelationshipToActorEntity(String entityName, String attributeNameToJoin) {
         EOEntity actor = EOModelGroup.defaultGroup().entityNamed(entityName);
@@ -259,7 +258,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
         preferencesRelationship.setToMany(true);
         preferencesRelationship.setJoinSemantic(EORelationship.InnerJoin);
         preferencesRelationship.setDeleteRule(EOEntityClassDescription.DeleteRuleCascade);
-        
+
         EOJoin userJoin = new EOJoin(preference.attributeNamed("userID"), actor.attributeNamed(attributeNameToJoin) );
         EORelationship userRelationship = new EORelationship();
         userRelationship.setName("user");
@@ -312,7 +311,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
     public void setProblemEmailDomain(String value) {
         _problemEmailDomain = value;
     }
-    
+
     public synchronized String extraInfoString(NSDictionary extraInfo, int indent) {
 		StringBuffer s = new StringBuffer();
 		ERXStringUtilities.indent(s, indent);
@@ -339,7 +338,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 	    }
 	    return s.toString();
 	}
-    	
+
 
     /**
      * Reports an exception. If caching is enabled then the exception
@@ -356,7 +355,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
         try {
             s.append(" **** Caught: "+exception + "\n");
             s.append(extraInfoString(extraInfo, 3));
-            
+
             if (exception instanceof EOGeneralAdaptorException) {
                 EOGeneralAdaptorException  e= (EOGeneralAdaptorException)exception;
                 if (e.userInfo()!=null) {
@@ -433,7 +432,7 @@ public class ERCoreBusinessLogic extends ERXFrameworkPrincipal {
 
     public void createTables(EOEditingContext ec, String modelName) throws SQLException {
         // AK: FIXME we should try with the DROP options enabled and re-try with the options disabled
-        // so we catch the case when we 
+        // so we catch the case when we
         EODatabaseContext databaseContext = EOUtilities.databaseContextForModelNamed(ec, modelName);
         ERXSQLHelper helper = ERXSQLHelper.newSQLHelper(databaseContext);
         String sql = helper.createSchemaSQLForEntitiesInModelWithName(null, modelName);

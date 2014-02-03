@@ -463,6 +463,17 @@
         </antcall>
     </target>
 
+    <target name="ERCoreBusinessLogicDTW.all">
+        <antcall target="global.framework.${build.action}" >
+            <param name="project.principal.class" value="" />
+            <param name="project.name" value="ERCoreBusinessLogicDTW" />
+            <param name="project.dir" value="Frameworks/BusinessLogic/ERCoreBusinessLogicDTW" />
+
+            <param name="wo.system.root.bundles" value="${frameworks.system.d2w}" />
+            <param name="wo.external.root.bundles" value="${frameworks.wonder.logic}" />
+        </antcall>
+    </target>
+
     <target name="ERChangeNotificationJMS.all">
         <antcall target="global.framework.${build.action}" >
             <param name="project.principal.class" value="er.changenotification.ERCNNotificationCoordinator" />
@@ -1375,7 +1386,7 @@
         to add your own, add a target definition above and choose the correct group below
      -->
 
-    <target name="common.frameworks.all" depends="ERJars.all, JavaWOExtensions.all, ERExtensions.all, Ajax.all, ERDirectToWeb.all, ERNeutralLook.all, ERSelenium.all, WOOgnl.all, ERPrototypes.all, ERPlot.all, ERIndexing.all, ERChronic.all, ERCaptcha.all, ERProfiling.all, EROpenID.all, ERPDFGeneration.all, ERJGroupsSynchronizer.all, ERRest.all, ERAttachment.all, ERTaggable.all, ERJavaMail.all, ERCoreBusinessLogic.all, ERChangeNotificationJMS.all, ERCalendar.all, ERExcelLook.all, BTBusinessLogic.all, JavaMemoryAdaptor.all, JavaNeo4JAdaptor.all, JavaFSAdaptor.all, JavaERJDBCAdaptor.all, WOLips.all, WOJRebel.all, ERMoviesLogic.all, SnapshotExplorer.all, ERJasperReports.all, ERAttributeExtension.all, ERWOAdaptor.all, ERCayenne.all, ERCayenne.all, ERDistribution.all, MooTools.all, ERJQueryMobile.all, ERPersistentSessionStorage.all, ERQuartzScheduler.all, ERXiss.all, ERFirebug.all, ERXPartialBaseModel.all, ERXPartialsExampleModel.all" />
+    <target name="common.frameworks.all" depends="ERJars.all, JavaWOExtensions.all, ERExtensions.all, Ajax.all, ERDirectToWeb.all, ERNeutralLook.all, ERSelenium.all, WOOgnl.all, ERPrototypes.all, ERPlot.all, ERIndexing.all, ERChronic.all, ERCaptcha.all, ERProfiling.all, EROpenID.all, ERPDFGeneration.all, ERJGroupsSynchronizer.all, ERRest.all, ERAttachment.all, ERTaggable.all, ERJavaMail.all, ERCoreBusinessLogic.all, ERCoreBusinessLogicDTW.all,ERChangeNotificationJMS.all, ERCalendar.all, ERExcelLook.all, BTBusinessLogic.all, JavaMemoryAdaptor.all, JavaNeo4JAdaptor.all, JavaFSAdaptor.all, JavaERJDBCAdaptor.all, WOLips.all, WOJRebel.all, ERMoviesLogic.all, SnapshotExplorer.all, ERJasperReports.all, ERAttributeExtension.all, ERWOAdaptor.all, ERCayenne.all, ERCayenne.all, ERDistribution.all, MooTools.all, ERJQueryMobile.all, ERPersistentSessionStorage.all, ERQuartzScheduler.all, ERXiss.all, ERFirebug.all, ERXPartialBaseModel.all, ERXPartialsExampleModel.all" />
 
     <target name="common.applications.all" depends="BugTracker.all, ERMailer.all, Uber.all, SecretPal.all, ERXTest.all, PluginTest.all, WOTested.all" />
     
