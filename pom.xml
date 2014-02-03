@@ -203,6 +203,11 @@
             </dependency>
             <dependency>
                 <groupId>wonder.businesslogic</groupId>
+                <artifactId>ERCoreBusinessLogicDTW</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>wonder.businesslogic</groupId>
                 <artifactId>BTBusinessLogic</artifactId>
                 <version>${project.version}</version>
             </dependency>
