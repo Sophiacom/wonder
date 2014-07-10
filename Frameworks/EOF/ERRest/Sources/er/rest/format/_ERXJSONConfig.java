@@ -38,11 +38,11 @@ public class _ERXJSONConfig {
 		}
 
 		public Object processArrayValue(Object obj, JsonConfig jsonconfig) {
-			return ERXRestUtils.coerceValueToString(obj, _context);
+			return ERXRestUtils.convertValue(obj, _context);
 		}
 
 		public Object processObjectValue(String s, Object obj, JsonConfig jsonconfig) {
-			return ERXRestUtils.coerceValueToString(obj, _context);
+			return ERXRestUtils.convertValue(obj, _context);
 		}
 	}
 

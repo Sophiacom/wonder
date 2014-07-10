@@ -28,7 +28,7 @@ import er.extensions.foundation.ERXValueUtilities;
 
 /**
  * Miscellaneous rest-related utility methods.
- * 
+ *
  * @property er.rest.dateFormat
  * @property er.rest.timestampFormat
  * @property er.rest.rfcDateFormat (default "rfc822")
@@ -36,9 +36,11 @@ import er.extensions.foundation.ERXValueUtilities;
  * @author mschrag
  */
 public class ERXRestUtils {
+	public static final String EPOCH_FORMAT = "epoch";
+
 	/**
 	 * Returns whether or not the given object represents a primitive in REST.
-	 * 
+	 *
 	 * @param obj the object to check
 	 * @return whether or not the given object represents a primitive in REST
 	 */
@@ -48,7 +50,7 @@ public class ERXRestUtils {
 
 	/**
 	 * Returns whether or not the given class represents a primitive in REST.
-	 * 
+	 *
 	 * @param valueType the class to check
 	 * @return whether or not the given class represents a primitive in REST
 	 */
@@ -110,21 +112,25 @@ public class ERXRestUtils {
 
 	/**
 	 * Convert the given object to a String (using REST formats).
-	 * 
+	 *
 	 * @param value the value to convert
 	 * @return the REST-formatted string
 	 */
-	public static String coerceValueToString(Object value, ERXRestContext context) {
+	public static Object convertValue(Object value, ERXRestContext context) {
 		String formattedValue;
 		if (value == null || value instanceof NSKeyValueCoding.Null) {
 			formattedValue = null;
 		}
 		else if (value instanceof NSTimestamp) {
 			NSTimestamp timestamp = (NSTimestamp) value;
-			String rfcFormat = ERXProperties.stringForKeyWithDefault("er.rest.rfcDateFormat", "rfc822");
-			if ("rfc3339".equals(rfcFormat)) {
+			String format = ERXProperties.stringForKey("er.rest.timestampFormat");
+			if (EPOCH_FORMAT.equals(format)) {
+				return timestamp.getTime();
+			}
+			format = ERXProperties.stringForKeyWithDefault("er.rest.rfcDateFormat", "rfc822");
+			if ("rfc3339".equals(format)) {
 				formattedValue = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date(timestamp.getTime()));
-				formattedValue = formattedValue.substring(0, formattedValue.length()-2) + ":" + formattedValue.substring(formattedValue.length()-2);  				
+				formattedValue = formattedValue.substring(0, formattedValue.length()-2) + ":" + formattedValue.substring(formattedValue.length()-2);
 			} else {
 				formattedValue = ERXRestUtils.timestampFormat(false, context).format(timestamp);
 			}
@@ -188,7 +194,7 @@ public class ERXRestUtils {
 		}
 		return dateFormatter;
 	}
-	
+
 	protected static DateTimeFormatter jodaLocalDateFormat(boolean spaces, ERXRestContext context) {
 		DateTimeFormatter dateFormatter = (DateTimeFormatter)context.userInfoForKey("er.rest.jodaFormatter");
 		if (dateFormatter == null) {
@@ -208,7 +214,7 @@ public class ERXRestUtils {
 		}
 		return dateFormatter;
 	}
-	
+
 	protected static DateTimeFormatter jodaLocalDateTimeFormat(boolean spaces, ERXRestContext context) {
 		DateTimeFormatter dateFormatter = (DateTimeFormatter)context.userInfoForKey("er.rest.jodaTimeFormatter");
 		if (dateFormatter == null) {
@@ -228,7 +234,7 @@ public class ERXRestUtils {
 		}
 		return dateFormatter;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Object coerceValueToTypeNamed(Object value, String valueTypeName, ERXRestContext context, boolean resolveEntities) {
 		Object parsedValue;
@@ -293,45 +299,30 @@ public class ERXRestUtils {
 		}
 		else if (valueType != null && NSData.class.isAssignableFrom(valueType)) {
 			parsedValue = ERXValueUtilities.dataValueWithDefault(value, null);
-		}		
+		}
 		else if (valueType != null && NSTimestamp.class.isAssignableFrom(valueType)) {
 			if (value instanceof NSTimestamp) {
-				parsedValue = value;
+				return value;
 			}
-			else {
-				String strValue = (String) value;
-				boolean spaces = strValue.indexOf(' ') != -1;
-				String rfcFormat = ERXProperties.stringForKeyWithDefault("er.rest.rfcDateFormat", "rfc822");					
-				if ("rfc3339".equals(rfcFormat)) {
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-					java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(.*[\\-,\\+]{1}[0-9]{1,2}):([0-9]{1,2})");
-					java.util.regex.Matcher matcher = pattern.matcher(strValue);
-					if (matcher.matches()) {
-						try {
-							strValue = matcher.group(1) + matcher.group(2);
-							parsedValue = formatter.parseObject(strValue);
-							if (parsedValue instanceof java.util.Date) {
-								parsedValue = new NSTimestamp((Date)parsedValue);
-							} 
-						} catch (Throwable t) {
-							String msg = "Failed to parse '" + strValue + "' as a timestamp";
-							if (formatter != null) {
-								msg += " (example: " + formatter.format(new NSTimestamp()) + ")";
-							}
-							msg += ".";
-							throw new IllegalArgumentException(msg, t);
-						}
-					} else {
-						strValue  = null;
-						throw new IllegalArgumentException(strValue + " didn't match the " + pattern.pattern() + " pattern", new Throwable());
-					}
-				} else {
-					Format formatter = null;
+			if (value instanceof Number) {
+				return new NSTimestamp(((Number) value).longValue());
+			}
+
+			String strValue = (String) value;
+			boolean spaces = strValue.indexOf(' ') != -1;
+			String rfcFormat = ERXProperties.stringForKeyWithDefault("er.rest.rfcDateFormat", "rfc822");
+			if ("rfc3339".equals(rfcFormat)) {
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+				java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(.*[\\-,\\+]{1}[0-9]{1,2}):([0-9]{1,2})");
+				java.util.regex.Matcher matcher = pattern.matcher(strValue);
+				if (matcher.matches()) {
 					try {
-						formatter = ERXRestUtils.timestampFormat(spaces, context);
-						parsedValue = formatter.parseObject(strValue);		
-					}
-					catch (Throwable t) {
+						strValue = matcher.group(1) + matcher.group(2);
+						parsedValue = formatter.parseObject(strValue);
+						if (parsedValue instanceof java.util.Date) {
+							parsedValue = new NSTimestamp((Date)parsedValue);
+						}
+					} catch (Throwable t) {
 						String msg = "Failed to parse '" + strValue + "' as a timestamp";
 						if (formatter != null) {
 							msg += " (example: " + formatter.format(new NSTimestamp()) + ")";
@@ -339,8 +330,26 @@ public class ERXRestUtils {
 						msg += ".";
 						throw new IllegalArgumentException(msg, t);
 					}
+				} else {
+					strValue  = null;
+					throw new IllegalArgumentException(strValue + " didn't match the " + pattern.pattern() + " pattern", new Throwable());
+				}
+			} else {
+				Format formatter = null;
+				try {
+					formatter = ERXRestUtils.timestampFormat(spaces, context);
+					parsedValue = formatter.parseObject(strValue);
+				}
+				catch (Throwable t) {
+					String msg = "Failed to parse '" + strValue + "' as a timestamp";
+					if (formatter != null) {
+						msg += " (example: " + formatter.format(new NSTimestamp()) + ")";
+					}
+					msg += ".";
+					throw new IllegalArgumentException(msg, t);
 				}
 			}
+
 		}
 		else if (valueType != null && Date.class.isAssignableFrom(valueType)) {
 			if (value instanceof NSTimestamp) {
@@ -417,7 +426,7 @@ public class ERXRestUtils {
 		else if (resolveEntities) {
 			EOClassDescription entity = ERXRestClassDescriptionFactory.classDescriptionForEntityName(valueTypeName);
 			if (entity != null) {
-			  parsedValue = IERXRestDelegate.Factory.delegateForClassDescription(entity).objectOfEntityWithID(entity, value, context);
+				parsedValue = IERXRestDelegate.Factory.delegateForClassDescription(entity).objectOfEntityWithID(entity, value, context);
 			}
 			else {
 				throw new IllegalArgumentException("Unknown value type '" + valueTypeName + "'.");
@@ -428,10 +437,10 @@ public class ERXRestUtils {
 		}
 		return parsedValue;
 	}
-	
+
 	/**
 	 * Parses the given String and returns an object.
-	 * 
+	 *
 	 * @param value
 	 *            the value of the attribute
 	 * @param parentEntity

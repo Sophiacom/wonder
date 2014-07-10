@@ -28,7 +28,7 @@ public class ERXXmlRestWriter implements IERXRestWriter {
 	}
 
 	protected String coerceValueToString(Object value, ERXRestContext context) {
-		return ERXRestUtils.coerceValueToString(value, context);
+		return String.valueOf(ERXRestUtils.convertValue(value, context));
 	}
 
 	protected void appendNodeToResponse(ERXRestRequestNode node, IERXRestResponse response, int indent, ERXRestFormat.Delegate delegate, ERXRestContext context) {
