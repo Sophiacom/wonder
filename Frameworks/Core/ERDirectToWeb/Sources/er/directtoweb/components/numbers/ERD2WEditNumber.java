@@ -17,26 +17,27 @@ import com.webobjects.eoaccess.EOAttribute;
 import com.webobjects.foundation.NSNumberFormatter;
 import com.webobjects.foundation.NSValidation;
 
+import er.extensions.appserver.ERXSession;
 import er.extensions.eof.ERXConstant;
 import er.extensions.formatters.ERXNumberFormatter;
 import er.extensions.validation.ERXValidationFactory;
 
 /**
  * Common superclass of all ER's edit number components.<br />
- * 
+ *
  * @d2wKey name
  * @d2wKey smartAttribute
  */
 public class ERD2WEditNumber extends D2WEditNumber {
 	/**
 	 * Do I need to update serialVersionUID?
-	 * See section 5.6 <cite>Type Changes Affecting Serialization</cite> on page 51 of the 
+	 * See section 5.6 <cite>Type Changes Affecting Serialization</cite> on page 51 of the
 	 * <a href="http://java.sun.com/j2se/1.4/pdf/serial-spec.pdf">Java Object Serialization Spec</a>
 	 */
 	private static final long serialVersionUID = 1L;
 
-    public ERD2WEditNumber(WOContext context) { super(context); }
-    
+    public ERD2WEditNumber(final WOContext context) { super(context); }
+
     /** Logging support */
     public final static Logger log = Logger.getLogger(ERD2WEditNumber.class);
 
@@ -50,7 +51,7 @@ public class ERD2WEditNumber extends D2WEditNumber {
     public EOAttribute attribute() {
         return super.attribute() != null ? super.attribute() : (EOAttribute)d2wContext().valueForKey("smartAttribute");
     }
-    
+
     private NSNumberFormatter _numberFormatter;
     protected java.text.Format numberFormatter() {
         if (_numberFormatter == null) {
@@ -60,7 +61,7 @@ public class ERD2WEditNumber extends D2WEditNumber {
     }
 
     @Override
-    public Object validateTakeValueForKeyPath (Object anObject, String aPath) throws NSValidation.ValidationException {
+    public Object validateTakeValueForKeyPath (final Object anObject, final String aPath) throws NSValidation.ValidationException {
         Number number = null;
         try {
             if (anObject instanceof String) {
@@ -69,22 +70,22 @@ public class ERD2WEditNumber extends D2WEditNumber {
                 log.warn("Unable to read number: " + anObject);
                 throw ERXValidationFactory.defaultFactory().createException(object(), propertyKey(), anObject, "NotANumberException");
             }
-        } catch(NSValidation.ValidationException ex) {
+        } catch(final NSValidation.ValidationException ex) {
             validationFailedWithException(ex, anObject, propertyKey());
             throw ex;
         }
         return super.validateTakeValueForKeyPath(convertNumber(number), propertyKey());
     }
     @Override
-    public void validationFailedWithException(Throwable theException,Object theValue, String theKeyPath)  {
+    public void validationFailedWithException(final Throwable theException,final Object theValue, final String theKeyPath)  {
         // This is for number formatting exceptions
-        String keyPath = theKeyPath.equals("stringValue") ? propertyKey() : theKeyPath;
+        final String keyPath = theKeyPath.equals("stringValue") ? propertyKey() : theKeyPath;
         // the following is needed because we might
         Number formatValue = null;
         try {
         	if (theValue != null)
         		formatValue = (Number) numberFormatter().parseObject((String) theValue);
-        } catch(Exception ex) {
+        } catch(final Exception ex) {
         	formatValue = (Number)objectPropertyValue();
         }
         parent().validationFailedWithException(theException, formatValue, keyPath);
@@ -94,24 +95,24 @@ public class ERD2WEditNumber extends D2WEditNumber {
     public String stringValue() {
         return value() != null ? numberFormatter().format(value()) : null;
     }
-    public void setStringValue(String newStringValue) {
+    public void setStringValue(final String newStringValue) {
         if (newStringValue != null)
             setValue(numberFormatValueForString(newStringValue));
         else
             setValue(null);
     }
-    protected Object numberFormatValueForString(String value) {
+    protected Object numberFormatValueForString(final String value) {
         Object formatValue = null;
         try {
             if (value != null)
                 formatValue = numberFormatter().parseObject(value);
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             log.debug("Unable to parse number: " + value + " in " + propertyKey());
             throw ERXValidationFactory.defaultFactory().createException(object(), propertyKey(), value, "IllegalCharacterInNumberException");
         }
         return formatValue;
     }
-    protected Object convertNumber(Object anObject) {
+    protected Object convertNumber(final Object anObject) {
         Number newValue=null;
         if (anObject!=null && anObject instanceof Number) {
             newValue=(Number)anObject;
@@ -123,7 +124,10 @@ public class ERD2WEditNumber extends D2WEditNumber {
         return newValue;
     }
 
-    public  String placeholder(){
-    	return (String) d2wContext().valueForKey("placeholder");
+    public String placeholder(){
+    	final String placeholderValue = (String) d2wContext().valueForKey("placeholder");
+    	if (placeholderValue == null)
+    		return null;
+    	return ((ERXSession) context().session()).localizer().localizedDisplayNameForKey("Placeholder", placeholderValue);
     }
 }
