@@ -13,4 +13,5 @@
 	"ValueConversionException" = "La valeur entr&eacute;e pour <b>@@displayNameForProperty@@</b> n'est pas du type <b>@@attribute.valueClass@@</b>.";
 	"UniquenessViolationNewObject" = "<b>@@displayNameForEntity@@</b> avec <b>@@displayNameForProperty@@</b> existe d&eacute;j&agrave;.";
 	"UniquenessViolationExistingObject" = "<b>@@displayNameForEntity@@</b> avec <b>@@displayNameForProperty@@</b> existe d&eacute;j&agrave;.";
+	"UniquenessViolationDatabaseInconsistent" = "Probl&agrave; de base de donn&eacute;e : <b>@@displayNameForEntity@@</b> avec <b>@@displayNameForProperty@@</b> existe plusieurs fois.";
 }
