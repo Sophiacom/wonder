@@ -18,26 +18,26 @@ import er.quartzscheduler.util.ERQSUtilities.ERQSJobInstanciationException.Error
  * <li>validateForDelete</li>
  * <li>validateForSave</li>
  * </ul>
- * 
+ *
  * by instantiating an object based on the job description class path.<p>
- * 
+ *
  * You can call directly ERQSUtilities.willSave(myJobDescriptionEO) for example but an instance of the job will be create each time.
  * You can also call createJobInstance(myJobDescriptionEO) and call the above methods yourself.<p>
  * Because the job class is not necessarily a subclass of ERQSJob (it can be a sub class of ERQSAbstractJob or just implement
  * the interface Job), the methods willDelete, willSave, validateForDelete, validateForSave checks if the instantiated object
  * is a ERQSJob object. If not the object is just returned.
- * 
+ *
  * @author Philippe Rabier
  *
  */
-public class ERQSUtilities 
+public class ERQSUtilities
 {
 	/**
 	 * This exception is thrown if the class to be instantiate doesn't exist or if it can't be instantiate like a wrong constructor
 	 * for example.<p>
 	 * Rather than create a hierarchy of classes corresponding to each different errors, we preferred to add an error type
 	 * that gives more information about the error.
-	 * 
+	 *
 	 * @author Philippe Rabier
 	 * @see ErrorType
 	 */
@@ -52,7 +52,7 @@ public class ERQSUtilities
 		private static final long serialVersionUID = 1L;
 		private final ErrorType errorType;
 
-		public ERQSJobInstanciationException(final String message, final ErrorType type) 
+		public ERQSJobInstanciationException(final String message, final ErrorType type)
 		{
 			super(message);
 			errorType = type;
@@ -87,35 +87,39 @@ public class ERQSUtilities
 
 	protected static final Logger log = Logger.getLogger(ERQSUtilities.class);
 
+	@SuppressWarnings("unchecked")
 	public static Job createJobInstance(final ERQSJobDescription jobDescription) throws ERQSJobInstanciationException
 	{
 		if (jobDescription == null)
 			throw new IllegalArgumentException("jobDescription can't be null");
 
+		if(jobDescription.classPath() == null)
+			throw new ERQSJobInstanciationException("classPath can't be null", ErrorType.CLASS_NOT_FOUND);
+
 		SimpleClassLoadHelper loader = new SimpleClassLoadHelper();
 		Class<? extends Job> aJobClass = null;
-		try 
+		try
 		{
 			aJobClass = (Class<? extends Job>) loader.loadClass(jobDescription.classPath());
-		} catch (ClassNotFoundException e) 
+		} catch (ClassNotFoundException e)
 		{
 			throw new ERQSJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.CLASS_NOT_FOUND);
 		}
 
 		Constructor<? extends Job> constructor = null;
-		try 
+		try
 		{
 			constructor = aJobClass.getConstructor();
-		} catch (Exception e) 
+		} catch (Exception e)
 		{
 			throw new ERQSJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.CONSTRUCTOR_ERROR, e);
 		}
 
 		Job aJob = null;
-		try 
+		try
 		{
 			aJob = constructor.newInstance();
-		} catch (Exception e) 
+		} catch (Exception e)
 		{
 			throw new ERQSJobInstanciationException("Class " + jobDescription.classPath() + " not found.", ErrorType.INSTANCE_ERROR, e);
 		}
@@ -125,10 +129,10 @@ public class ERQSUtilities
 	/**
 	 * To give a chance to let the job execute code before deleting ERQSJobDescription object.<p>
 	 * For example, you could clean up folders created when the ERQSJobDescription object is itself created.<br><br>
-	 * 
+	 *
 	 * Example:
 	 * <pre>
-	 *     public void willDelete() 
+	 *     public void willDelete()
 	 *     {
 	 *     		super.willDelete();
 	 *     		try
@@ -154,7 +158,7 @@ public class ERQSUtilities
 	/**
 	 * To give a chance to let the job execute code before saving ERQSJobDescription object.<p>
 	 * For example, you could create up folders on the disk.<br><br>
-	 * 
+	 *
 	 * @param jobDescription
 	 * @return an instance of the job
 	 * @throws ERQSJobInstanciationException
@@ -169,7 +173,7 @@ public class ERQSUtilities
 
 	/**
 	 * To give a chance to let the job raise an validation exception before deleting ERQSJobDescription object.<p>
-	 * 
+	 *
 	 * @param jobDescription
 	 * @return an instance of the job
 	 * @throws ERQSJobInstanciationException
@@ -184,10 +188,10 @@ public class ERQSUtilities
 
 	/**
 	 * To give a chance to let the job raise an validation exception before validating ERQSJobDescription object.<p>
-	 * 
+	 *
 	 * Example:
 	 * <pre>
-	 *     public void validateForSave() 
+	 *     public void validateForSave()
 	 *     {
 	 *     		super.validateForSave();
 	 *     		try
@@ -201,7 +205,7 @@ public class ERQSUtilities
 	 *     		}
 	 *     }
 	 * </pre>
-	 * 
+	 *
 	 * @param jobDescription
 	 * @return an instance of the job
 	 * @throws ERQSJobInstanciationException
