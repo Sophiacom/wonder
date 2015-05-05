@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>wonder</groupId>
     <artifactId>wonder</artifactId>
-    <version>6.1.3</version>
+    <version>sophiacom</version>
     <packaging>pom</packaging>
     <name>Project Wonder</name>
     <url>http://wiki.objectstyle.org/confluence/display/WONDER/Home</url>
@@ -623,17 +623,17 @@
             <dependency>
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>jr-sdk</artifactId>
-                <version>3.0.1</version>
+                <version>3.0-M1</version>
             </dependency>
             <dependency>
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>jr-utils</artifactId>
-                <version>3.0.1</version>
+                <version>3.0-M1</version>
             </dependency>
             <dependency>
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>jr-javassist</artifactId>
-                <version>3.11.0.GA</version>
+                <version>3.8.0.GA</version>
             </dependency>
             <dependency>
                 <groupId>org.xhtmlrenderer</groupId>
