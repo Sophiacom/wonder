@@ -1697,7 +1697,19 @@ public class ERXRouteController extends WODirectAction {
 	 * @return the allowed origin for cross-site requests
 	 */
 	protected String accessControlAllowOrigin() {
-		return ERXProperties.stringForKeyWithDefault("ERXRest.accessControlAllowOrigin", null);
+		String origin = request().headerForKey("Origin");
+		if (origin == null) {
+			return null;
+		}
+
+		NSArray<?> allowedOrigins = ERXProperties.arrayForKey("ERXRest.accessControlAllowOrigin");
+		if (allowedOrigins.contains(origin)) {
+			return origin;
+		} else if (allowedOrigins.contains("*")) {
+			return "*";
+		} else {
+			return null;
+		}
 	}
 
 	/**
